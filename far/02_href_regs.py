@@ -18,8 +18,8 @@ rt = soup.find('div', class_ = 'reg-container clearfix')
 rt = rt.find_all('a')
 
 # Load file
-jname = os.path.basename(__file__).split('.')[0] + '.json'
-open(jname, 'w').close()
+jname = 'json/' + os.path.basename(__file__).split('.')[0] + '.json'
+# open(jname, 'w').close()
 jfile = open(jname, 'a', encoding = 'utf8')
 jfile.write('[')
 

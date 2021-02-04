@@ -59,8 +59,8 @@ far = [
        'Part 53-Forms'
       ]
 
-jname = os.path.basename(__file__).split('.')[0] + '.json'
-open(jname, 'w').close()
+jname = 'json/' + os.path.basename(__file__).split('.')[0] + '.json'
+# open(jname, 'w').close()
 jfile = open(jname, 'a', encoding = 'utf8')
 jfile.write('[')
 
