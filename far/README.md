@@ -1,7 +1,7 @@
 # Federal Acquisition Regulation API
 This project will attempt to convert the FAR into separate JSON objects, each ontaining html text for each section. This way, the FAR can be stored in a database and pulled whenever required, and only updated in one location.
 
-The FAR still needs to exist online in html in order for us to do some google searches on its contents, but maybe this API will allow the FAR parts/subparts/sectiosns to be stored in a more centralized location. This FAR API can pull the html text into wherever the FAR is required.
+The FAR still needs to exist online in html in order for us to do some google searches on its contents, but maybe this API will allow the FAR parts/subparts/sections to be stored in a more centralized location. This FAR API can pull the html text into wherever the FAR is required.
 
 Before jumping into too many ideas, problems will be explained below that will detail the rationale behind revamping the current system.
 
@@ -54,9 +54,19 @@ Each section should have a hyperlink of course, but how about a more generalized
 ### Problem 3: Separate html files for each and every subsection
 I believe that each subsection for every regulation deserves to be it's own object in some sort of database to be pulled or edited at will. However, each of these subsections absolutely does not need to be their own html file.
 
-Individuals in the acquisition field are not trained to read just the specific verbiage of text that relates to their requirement: they are taught to 'zoom-out' to the prescription of said text, then to 'zoom-out' even further to see if it still applies. This 'zooming-out' is crucial to ensuring any and all text applies to the issues at hand, and having one html file per subsection is inefficient.
+Individuals in the acquisition field are not trained to read just the specific verbiage of text that relates to their requirement: they are taught to 'zoom-out' to the prescription of said text, then to 'zoom-out' even further to see if it still applies. This 'zooming-out' is crucial to ensuring any and all text applies to the issues at hand, and having one html file per subsection is inefficient, unnecessary, and wasteful of space.
 
-The good news is, much of the regulations are already strcutured this way. This problem isn't too big among the supplements, but when it gets to the DFARS, all the text pertaining to the 
+The good news is, much of the regulations are already strcutured this way. This problem isn't too big among the supplements, but when it gets to the DFARS, all the text pertaining to each section and subsection brings users to individual links for not only each text, but the Table of Contents for each section. Above all, this is annoying since 'zooming-out' entitles you to hit the back button about four or five times before you actually get to where you need to reference.
+
+If every part of every regulation were just one html file, searching through contents will be so much easier. Once users find the paragraph they require, they simple just scroll up to read the prescription, scroll-up even more to read more prescriptions, and finally scroll to the top to insure everything complies. Again, this feature does exist but there are still separate html files lurking through the website waiting to catch users in a sticky web of inefficiency.
+
+In conclusion, having separate html files for each subsection:
+- makes it harder to manage code, since there would need to be a `#` in links to distinguish separate files
+- increases file bloat and system capacity
+- makes the users' jobs harder by spending more energy trying to find prescriptions
+- is completely unnecessary
+
+Why mention this with the API? The database will store the html for each subsection and generating the one html file for the regulation's part will just be a matter of combining all the appropriate objects together. This may even be how it is managed...
 
 
 
