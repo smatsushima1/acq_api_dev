@@ -70,12 +70,26 @@ In conclusion, having separate html files for each subsection:
 Why mention this with the API? The database will store the html for each subsection and generating the one html file for the regulation's part will just be a matter of combining all the appropriate objects together. This may even be how it is managed...
 
 ## Possibilities
-The main reason I wanted to create an API for the FAR was to implement a web app that will allow users to search for any number of regulations simultaneously. Acquisition professional must do this everyday anyway, and the way the regulations are currently established online, only one regulation can be viewed at the same time. People have been doing this for years, so I guess this isn't too big of a problem, but there is room for at least some improvement.
+The main reason I wanted to create an API for the FAR was to implement a web app that will allow users to search for any number of regulations simultaneously. Acquisition professional must do this everyday anyway, and the way the regulations are currently established online, only one regulation can be viewed at a same time. People have been doing this for years, so I guess this isn't too big of a problem, but there is room for at least some improvement.
 
 Having an API for the FAR will allow the web app to automatically detect when a selected reference from the FAR is available in another reference. Viewing regulations side-by-side can greatly help with the day-to-day searching and reading since all verbiage pertaining to the users' desired subject can now be had quicker in one tab, instead of having to find it in multiple tabs.
 
 In theory, if the FAR were stored in a database and referenced at ease, the system will be able to tell if a supplemental regulation further implements the FAR. Even if it doesn't apply, at least the API will allow the user to view the text (html) conveniently in front of them regardless. Utilizing proper hyperlinks will allow for faster and easier browsing (see problem [above](#hyperlinks-with-arbitrary-names)) as well as faster, easier, and more accurate analyzing of the regulations.
 
+## Complications with an API
+This project will not be without its problems. There are of course many things that could go wrong with this approach, which will be explained below for transparency.
 
+### It wont' be searchable
+Part of why having the FAR is valuable in html is that google can do its thing and search for exactly where a regulation is required. This puts [acquisition.gov](acquisition.gov) above the rest, as their layouts are very clearn and obviously well taken care-of. Besides from both of the problems above, I don't see any other website taking the reigns off of them to house the FAR.
+
+This supposed web app may be very useful and convenient, but it will lack the searching power of having these regs in html. This alone almost begs the question as to why even build this thing if you can't search in it? Maybe there is a way to integrate searching in this, which would make this even greater, but that's another project within this project.
+
+So with all this said, this web app will primarily be a nice tool to supplement the FAR - meant for people who already know where to look for a specific reference and needing to see whether this reference is referenced in any number of regulations. Limited capablities, but convenient.
+
+### Text will still need to be manually updated
+Either way, the FAR will need to be updated to reflect the many changes that update on a normal basis. This means that there will probably be more work involved with managing an API along with the text itself. Perhaps the DITA packages currently in use are perfect for the job already.
+
+### Potentially costly
+Having an API with constant data calls could potentially be more costly than just having html sitting on a website. The traditional website design that isn't like a web app is tried and true and more than likely isn't generating heavy costs. An AWS account that gets charged by the click could rack up many expenses.
 
 
