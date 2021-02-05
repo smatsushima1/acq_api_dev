@@ -5,8 +5,8 @@ The FAR still needs to exist online in html in order for us to do some google se
 
 Before jumping into too many ideas, problems will be explained below that will detail the rationale behind revamping the current system.
 
-## Problem 1: Inconsistency
-### Paragraphs and lists
+## Problems With Current System
+### Paragraphs And Lists
 The html structure of the FAR is not consistent among each regulation. Here is a table of how each regulation indents their paragraphs:
 
 |REGULATION|STYLE|
@@ -47,12 +47,12 @@ As you can see, the vast majority of the regulations don't even have indents. Th
 
 If all the regulation had the same formatting and structure, perusing their contents will easier and more efficient. The current version of the FAR isn't unreadable, but it could use some improvements.
 
-### Hyperlinks with arbitrary names
+### Hyperlinks With Arbitrary Names
 Scoring through the html code, you can find numerous examples of hyperlink ID's that make no sense at all. Take HHSAR part 317: the contents of this has almost not a single id that makes logical sense. For example, what exactly is `P8_300` supposed to mean in a section that direcetly preceeds `P18_1718`?
 
 Each section should have a hyperlink of course, but how about a more generalized format such as the actual reference of the text in the regulation? `P8_300` is the hyperlink ID for HHSAR 317.105-1. What if it was called `0317_105_1` so that we can parse this ID and easily get the part, section, and subsection? Having links like this in a more standardized format will allow setting up the webpage so much easier and more convenient. A solid foundation eases future edits.
 
-## Problem 2: Separate html files for each and every subsection
+### Separate html Files For Evrey Subsection
 I believe that each subsection for every regulation deserves to be it's own object in some sort of database to be pulled or edited at will. However, each of these subsections absolutely does not need to be their own html file.
 
 Individuals in the acquisition field are not trained to read just the specific verbiage of text that relates to their requirement: they are taught to 'zoom-out' to the prescription of said text, then to 'zoom-out' even further to see if it still applies. This 'zooming-out' is crucial to ensuring any and all text applies to the issues at hand, and having one html file per subsection is inefficient, unnecessary, and wasteful of space.
@@ -68,6 +68,11 @@ In conclusion, having separate html files for each subsection:
 - is completely unnecessary
 
 Why mention this with the API? The database will store the html for each subsection and generating the one html file for the regulation's part will just be a matter of combining all the appropriate objects together. This may even be how it is managed...
+
+### Mobile Versions an Unneeded Luxury
+The current system uses a DITA system to manage their content which seems perfect for this but in all honesty, a mobile version of the FAR is just not warranted. Users who routinely seach trough the FAR don't use it on mobile devices, but on computers. This may seem counterintuitive to today's society, but a mobile version is just not required for the vast majority of acquisitions professionals.
+
+But in either case, a FAR API will be able to send information to any device which will reduce the need to have multiple formats for the same publication.
 
 ## Possibilities
 The main reason I wanted to create an API for the FAR was to implement a web app that will allow users to search for any number of regulations simultaneously. Acquisition professional must do this everyday anyway, and the way the regulations are currently established online, only one regulation can be viewed at a same time. People have been doing this for years, so I guess this isn't too big of a problem, but there is room for at least some improvement.
