@@ -1,8 +1,0 @@
-#!/bin/bash
-
-if git fetch -q --dry-run | grep -q 'up-to-date'; then
-  echo "yes"
-else
-  echo "no"
-fi
-
