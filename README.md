@@ -6,5 +6,5 @@ Currently, these projects amount to creating API's for the following:
 - SBA Small Business Size Standards
 - VETS-4212 Registrations
 
-For more information on each of these projects, please read the README in each of the respective folders.
+For more information on each of these projects, please consult the README in each of the respective folders.
 
