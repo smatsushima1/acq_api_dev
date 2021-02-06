@@ -33,7 +33,56 @@ with open(hname2, 'r', encoding = 'utf8') as hn1:
 
 
 
+# for far, dfars, dfars pgi, gsam:
+# h1 = Parts
+# h2 = Subparts
+# h3 = Sections
+# h4 = Subsections
+#
+# TOC:
+# div class= 'body'
+#
+# Content:
+# article role= 'article'
+# div class= 'body conbody'
+# *To pull data, get all get_text between two headings
+# *Each subsection gets its own division?
 
+
+
+
+# for supplementals:
+# h1 = Parts
+# h2 = Subparts
+# h3 = Sections
+# h4 = Subsections
+#
+# TOC:
+# *Usually not found...
+# div class= 'field-items'
+# div id='Table of Contents1"
+# *Create my own? Ugh...
+#
+# Content:
+# div class= 'field-items'
+# *To pull data, get all get_text between two headings
+# *Each subsection gets its own division?
+
+
+
+
+
+
+
+
+
+
+# Steps:
+# 1) Save current TOC into json file, links to each section
+# 1a) Possibly save TOC and reformat structure, along with each a href
+# 2) From this TOC json file, iterate over each section then save those sections
+#    as independent json files
+# 3) Fix paragraphs now or later?
 
 
 
