@@ -11,7 +11,7 @@ import re
 # Functions
 
 # Return html text
-def ret_html(addr):
+def ret_href(addr):
   # Open the url and save it as an html object
   srch1 = 'https://www.acquisition.gov'
   srch2 = srch1 + addr
@@ -19,51 +19,43 @@ def ret_html(addr):
   html_res = resp.read()
   soup = bsp(html_res, 'html.parser')
   
-  reg_num = addr.split('/')
-  jf.write('"' + reg_num + '"' + ': [')
-
-  # Finding this div applies to FAR, DFARS, and GSAM
-  htxt = soup.find('div', id = 'parts-wrapper')
-  if len(htxt) != 0:
-    htxt = htxt.div
-    htxt = htxt.find_all('a')
-    for i in htxt:
-      hpart = ret_part(i.get_text())
-      href = srch1 + i.attrs['href']
-      d = {
-           'part': hpart,
-           'href': href,
-           'html_text': 'N/A'
-          }
-      json.dump(d, jf, indent = 2)
-      
-      
-      
-      #print(hnum + ' - ' + hreg)
-      #jf.write(str(i))
-      
-  # These apply to the supplementals
-  else:
-    htxt = soup.tbody
-    htxt = htxt.find_all('a')
-    for i in htxt:
-      hpart = ret_part(i.get_text())
-      href = srch1 + i.attrs['href']
-      d = {
-           'part': hpart,
-           'href': href,
-           'html_text': 'N/A'
-          }
-      json.dump(d, jf, indent = 2)
-      
-      
-      
-      
-      #print(hnum + ' - ' + hreg)
-      #jf.write(str(i))
+  # Start writing to html file
+  with open(hname, 'a', encoding = 'utf8') as hf:
+    lbr = '<br>'
+    hf.write(lbr * 5 + addr)
   
+    # Add before adding everything else
+    # Square brackets = array of objects (list)
+    # Curly brackets = object
+    reg_num = addr.strip('/')
+    jf.write('"' + reg_num + '"' + ': [')
+  
+    # Finding this div applies to FAR, DFARS, and GSAM
+    # It would be 0 if this id wasn't even on the page
+    htxt = soup.find('div', id = 'parts-wrapper')
+    if htxt is not None:
+      htxt = htxt.div
+    else:
+      htxt = soup.tbody
+    hf.write(str(htxt.prettify()))
+    
+  # Then get a list of all the a's, which has our information
+  htxt = htxt.find_all('a')
+  for j in htxt:
+    # The part numbers will always just be the text
+    # Concatenate and complete the href
+    hpart = ret_part(j.get_text())
+    href = srch1 + j.attrs['href']
+    d = {
+         # Figure out how to change to int
+         'part': hpart,
+         'href': href,
+         'html_text': 'N/A'
+        }
+    json.dump(d, jf, indent = 2)
+  
+  # Close the bracket  
   jf.write(']')
-  #jf.write(str(i))
 
 # Returns the part number regardless of what type it is
 def ret_part(txt):
@@ -79,26 +71,38 @@ def ret_part(txt):
 # Remove all its contents before writing anything, but only if it exists
 jname = os.path.basename(__file__).split('.')[0]
 jname = 'json/' + jname + '.json'
-# jname = 'html/' + jname + '.html'
+if path.exists(jname): open(jname, 'w').close()
 
-reg = '/far'
+# write html for each section just to get an idea of each structure
+hname = os.path.basename(__file__).split('.')[0]
+hname = 'html/' + hname + '.html'
+if path.exists(hname): open(hname, 'w').close()
 
-if path.exists(jname):
-  open(jname, 'w').close()
-with open(jname, 'w', encoding = 'utf8') as jf: 
-  jf.write('{')
-  ret_html(reg)
+# Save all data from hrefs and regs into dictionary to loop through
+jname2 = 'json/02_href_regs.json'
+with open(jname2) as jf2:
+  data = json.load(jf2)
+
+# File will open here to start being added to
+# Won't close until all the regs have been looped through
+with open(jname, 'w', encoding = 'utf8') as jf:
+  jf.write('{')  
+  for i in data:
+    reg = i['href']
+    print(reg)
+    ret_href(str(reg))
+
   jf.write('}')
 
-# # Convert all dictionaries to strings, then add commas inbetween each object
-# # Then, overwrite old file with new changes as a list of strings
+# Convert all dictionaries to strings, then add commas inbetween each object
+# Then, overwrite old file with new changes as a list of strings
 with open(jname, 'r') as jf:
   contents = jf.read()
   contents = contents.replace('}{', '},{')
 with open(jname, 'w', encoding = 'utf8') as jf:
   jf.write(contents)
 
-# # Finally, reconvert the file back to json
+# Finally, reconvert the file back to json
 with open(jname, 'r') as jf:
   contents = json.load(jf)
 with open(jname, 'w', encoding = 'utf8') as jf:
@@ -117,8 +121,7 @@ print('Finished pushing data to ' + jname)
   #rt = rt.find_all('a')
 
 
-# Square brackets = array of objects (list)
-# Curly brackets = object
+
 
 
 
