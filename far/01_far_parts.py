@@ -1,9 +1,39 @@
 # Parse-out FAR part and its name
+# Originally, the part names were going to be pulled into each respective
+#   citation, but this doesn't seem necessary anymore
+# This will still stay in the file though...
 
 import os
 from os import path
 import json
 
+###############################################################################
+# FUNCTIONS
+
+# Add commas and convert to json
+def conv_json(file):
+  # Convert all dictionaries to strings, then add commas inbetween each object
+  with open(file, 'r') as jf:
+    contents = jf.read()
+    contents = contents.replace('}{', '},{')
+  # Overwrite old file with new changes as a list of strings
+  with open(file, 'w', encoding = 'utf8') as jf:
+    jf.write(contents)
+  # Finally, reconvert the file back to a json file
+  with open(file, 'r') as jf:
+    contents = json.load(jf)
+  with open(file, 'w', encoding = 'utf8') as jf:
+    json.dump(contents, jf, indent = 2)
+    
+###############################################################################
+# ADD DATA
+
+# Remove all file contents before writing anything, but only if it exists
+jname = os.path.basename(__file__).split('.')[0]
+jname = 'json/' + jname + '.json'
+if path.exists(jname): open(jname, 'w').close()
+
+# https://acqnotes.com/acqnote/careerfields/federal-acquisition-regulation-index
 far = [
        'Part 1-Federal Acquisition Regulations System', 
        'Part 2-Definitions of Words and Terms', 
@@ -60,13 +90,9 @@ far = [
        'Part 53-Forms'
       ]
 
-# Load file
-# Remove all its contents before writing anything, but only if it exists
-jname = os.path.basename(__file__).split('.')[0]
-jname = 'json/' + jname + '.json'
-if path.exists(jname): open(jname, 'w').close()
-
+# Start writing to file
 with open(jname, 'w', encoding = 'utf8') as jf:
+  # Add open bracket before adding data through loop
   jf.write('[')
   # Perform multiple splits to separate the '-' and the spaces
   for i in far:
@@ -85,20 +111,27 @@ with open(jname, 'w', encoding = 'utf8') as jf:
   # Add closing brackets after for loop ends
   jf.write(']')
 
-# Convert all dictionaries to strings, then add commas inbetween each object
-# Then, overwrite old file with new changes as a list of strings
-with open(jname, 'r') as jf:
-  contents = jf.read()
-  contents = contents.replace('}{', '},{')
-with open(jname, 'w', encoding = 'utf8') as jf:
-  jf.write(contents)
-
-# Finally, reconvert the file back to a json file
-with open(jname, 'r') as jf:
-  contents = json.load(jf)
-with open(jname, 'w', encoding = 'utf8') as jf:
-  json.dump(contents, jf, indent = 2)
+# At this stage, json files are actually lists with strings
+# This turns them into actual json files
+conv_json(jname)
 
 print('Finished pushing data to ' + jname)
 
+###############################################################################
+# CLEAN-UP DATA
+
+with open(jname, 'r') as jf:
+  data = json.load(jf)
+  for i in data:
+    # Replace original 'RESERVED' string to just one word
+    if 'RESERVED' in i['name']:
+      i['name'] = 'RESERVED'
+  # Save new data over the old data
+  data = data
+
+# New data overrites old data
+with open(jname, 'w', encoding = 'utf8') as jf:
+  json.dump(data, jf, indent = 2)
+
+print("Fished updating " + jname)
 

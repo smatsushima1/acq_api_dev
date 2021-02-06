@@ -8,24 +8,23 @@ import urllib as ul
 import re
 
 ###############################################################################
-# Functions
+# FUNCTIONS
 
 # Parse each part for each regulation
 def parts_hrefs(addr):
-  srch1 = 'https://www.acquisition.gov'
-  srch2 = srch1 + addr
-
-  # Open the url and save it as an html object
-  resp = ul.request.urlopen(srch2)
-  html_res = resp.read()
-  soup = bsp(html_res, 'html.parser')
-  
   # Add before adding everything else
   # Square brackets = array of objects (list)
   # Curly brackets = object
   reg_num = addr.strip('/')
-  jf.write('"' + reg_num + '"' + ': [')
-
+  jf.write('"' + reg_num + '"' + ': [')  
+  
+  # Open the url and save it as an html object  
+  srch1 = 'https://www.acquisition.gov'
+  srch2 = srch1 + addr
+  resp = ul.request.urlopen(srch2)
+  html_res = resp.read()
+  soup = bsp(html_res, 'html.parser')
+  
   # Finding this div applies to FAR, DFARS, and GSAM
   # If there were no results, it would be a null object
   htxt = soup.find('div', id = 'parts-wrapper')
@@ -70,7 +69,25 @@ def add_to_dict(hpart, href):
        'html_text': 'N/A'
        }
   json.dump(d, jf, indent = 2, sort_keys = True)
+
+# Add commas and convert to json
+def conv_json(file):
+  # Convert all dictionaries to strings, then add commas inbetween each object
+  with open(file, 'r') as jf:
+    contents = jf.read()
+    contents = contents.replace('}{', '},{')
+    contents = contents.replace(']"', '],"')
+  # Overwrite old file with new changes as a list of strings
+  with open(file, 'w', encoding = 'utf8') as jf:
+    jf.write(contents)
+  # Finally, reconvert the file back to a json file
+  with open(file, 'r') as jf:
+    contents = json.load(jf)
+  with open(file, 'w', encoding = 'utf8') as jf:
+    json.dump(contents, jf, indent = 2)
+
 ###############################################################################
+# ADD DATA
 
 # Load file
 # Remove all its contents before writing anything, but only if it exists
@@ -84,7 +101,7 @@ if path.exists(jname): open(jname, 'w').close()
 # hname = 'html/' + hname + '.html'
 # if path.exists(hname): open(hname, 'w').close()
 
-# Save all data from hrefs and regs into dictionary to loop through
+# Save the data from the regs file to loop through
 jname2 = 'json/02_href_regs.json'
 with open(jname2) as jf2:
   data = json.load(jf2)
@@ -95,25 +112,15 @@ with open(jname, 'w', encoding = 'utf8') as jf:
   jf.write('{')  
   for i in data:
     reg = str(i['href'])
+    # Just to see the progess of the code in the console
     print(reg)
     parts_hrefs(reg)
   # Close off final bracket
   jf.write('}')
 
-# Convert all dictionaries to strings, then add commas inbetween each object
-# Then, overwrite old file with new changes as a list of strings
-with open(jname, 'r') as jf:
-  contents = jf.read()
-  contents = contents.replace('}{', '},{')
-  contents = contents.replace(']"', '],"')
-with open(jname, 'w', encoding = 'utf8') as jf:
-  jf.write(contents)
-
-# Finally, reconvert the file back to json
-with open(jname, 'r') as jf:
-  contents = json.load(jf)
-with open(jname, 'w', encoding = 'utf8') as jf:
-  json.dump(contents, jf, indent = 2)
+# At this stage, json files are actually lists with strings
+# This turns them into actual json files
+conv_json(jname)
 
 print('Finished pushing data to ' + jname)  
 
