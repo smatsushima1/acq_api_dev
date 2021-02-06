@@ -46,16 +46,4 @@ with open(jname, 'w', encoding = 'utf8') as jf:
 
 print("Fished updating " + jname)
 
-# far, dfars, dfarspgi, gsam
-# try searching for the index/far and then go to div class = "clearfix" to 
-# display all the links. use bsp to search for a tags and loop through all the
-# div ids
-
-# afars, affars
-# search for tbody and then hrefs in there
-# div id = regulation-index-browse_wrapper
-
-
-
-
   

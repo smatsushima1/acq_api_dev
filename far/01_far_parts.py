@@ -64,13 +64,10 @@ far = [
 # Remove all its contents before writing anything, but only if it exists
 jname = os.path.basename(__file__).split('.')[0]
 jname = 'json/' + jname + '.json'
-
-if path.exists(jname):
-  open(jname, 'w').close()
+if path.exists(jname): open(jname, 'w').close()
 
 with open(jname, 'w', encoding = 'utf8') as jf:
   jf.write('[')
-
   # Perform multiple splits to separate the '-' and the spaces
   for i in far:
     spl1 = i.split('-')
@@ -79,14 +76,13 @@ with open(jname, 'w', encoding = 'utf8') as jf:
     fpart2 = spl1[1]
     fpart3 = fpart + '-'
     fname = i.replace(fpart3, '')
-    
+    # Create dictionary to start adding values
     d = {
          'part': int(fpart2),
          'name': str(fname)
         }
     json.dump(d, jf, indent = 2)
-    
-  # Add closing bracket to signify the end
+  # Add closing brackets after for loop ends
   jf.write(']')
 
 # Convert all dictionaries to strings, then add commas inbetween each object
@@ -104,4 +100,5 @@ with open(jname, 'w', encoding = 'utf8') as jf:
   json.dump(contents, jf, indent = 2)
 
 print('Finished pushing data to ' + jname)
+
 
