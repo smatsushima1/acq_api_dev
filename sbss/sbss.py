@@ -2,6 +2,7 @@
 # Footnotes are still prevalent within the data unfortunately...
 
 import os
+from os import path
 import json
 import openpyxl as opxl
 
@@ -63,96 +64,97 @@ ws = wb['table_of_size_standards-all']
 mrow = ws.max_row
 mcol = ws.max_column
 
-# Open file
-# Delete file if still in directory
-# Add left bracket to signify the beginning of adding data
-fname = os.path.basename(__file__).split('.')[0] + '.json'
-open(fname, 'w').close()
-json_file = open(fname, 'a', encoding = 'utf8')
-json_file.write('[')
+# Load file
+# Remove all its contents before writing anything, but only if it exists
+jname = os.path.basename(__file__).split('.')[0]
+jname = 'json/' + jname + '.json'
 
-# Loop through all rows
-irows = ws.iter_rows(min_row = 3,
-                     max_row = mrow,
-                     max_col = mcol,
-                     values_only = True
-                     )
-for r in irows:
-  # Create a new list to convert everything to strings, and change 'None' to 'N/A'
-  r2 = []
-  for i, val in enumerate(r):
-    fval = str(r[i])
+if path.exists(jname):
+  open(jname, 'w').close()
+  
+with open(jname, 'w', encoding = 'utf8') as jf:
+  jf.write('[')
+
+  # Loop through all rows
+  irows = ws.iter_rows(min_row = 3,
+                       max_row = mrow,
+                       max_col = mcol,
+                       values_only = True
+                       )
+  for r in irows:
+    # Create a new list to convert everything to strings, and change 'None' to 'N/A'
+    r2 = []
+    for i, val in enumerate(r):
+      fval = str(r[i])
+      
+      # First start with naics value
+      # The function will either save the value as a string, or parse out the
+      #   exception to the naics
+      if i == 0:
+        nai_exc = naics_parse(fval)
+        for j in nai_exc:
+          r2.append(j)
+      # If the values are emptoy, then change to 'N/A' - I don't want null values
+      # Otherwise, convert to string for now, and later change type accordingly
+      elif fval == 'None':
+        r2.append('N/A')
+      else:
+        r2.append(str(val))
+  
+    # Work with new list
+    # Strip-out spaces to allow parsing
+    # Save subsector names to be used in function
+    # Continue to next iteration if the row doesn't apply in either cases
+    fcol = r2[0]
+    fcol = fcol.strip()
+    if fcol.startswith('Sub'):
+      subn = sub_name(r2[0])
+      continue
+    elif fcol == 'N/A':
+      continue
     
-    # First start with naics value
-    # The function will either save the value as a string, or parse out the
-    #   exception to the naics
-    if i == 0:
-      nai_exc = naics_parse(fval)
-      for j in nai_exc:
-        r2.append(j)
-    # If the values are emptoy, then change to 'N/A' - I don't want null values
-    # Otherwise, convert to string for now, and later change type accordingly
-    elif fval == 'None':
-      r2.append('N/A')
-    else:
-      r2.append(str(val))
-
-  # Work with new list
-  # Strip-out spaces to allow parsing
-  # Save subsector names to be used in function
-  # Continue to next iteration if the row doesn't apply in either cases
-  fcol = r2[0]
-  fcol = fcol.strip()
-  if fcol.startswith('Sub'):
-    subn = sub_name(r2[0])
-    continue
-  elif fcol == 'N/A':
-    continue
+    # Begin assigning variables
+    nai = r2[0]
+    exc = r2[1]
+    ssec = nai[0:3]
+    ssec_n = subn
+    desc = r2[2]
+    ss_m = conv_na(r2[3])
+    ss_e = conv_na(r2[4])
+    fn = r2[5]
+    
+    # Parse out the footnote
+    if fn != 'N/A':
+      fn_sp = fn.split()
+      fn_co = int(len(fn_sp)) - 1
+      fn = fn_sp[fn_co]
+    
+    # Finally, pass all the data to a dictionary then dump into the file
+    d = {
+          'naics': int(nai),
+          'exception': exc,
+          'subsector': int(ssec),
+          'subsector_name': ssec_n,
+          'description': desc,
+          'ss_millions': float(ss_m),
+          'ss_employees': int(ss_e),
+          'footnotes': fn
+        }
+    json.dump(d, jf, indent = 2)
   
-  # Begin assigning variables
-  nai = r2[0]
-  exc = r2[1]
-  ssec = nai[0:3]
-  ssec_n = subn
-  desc = r2[2]
-  ss_m = conv_na(r2[3])
-  ss_e = conv_na(r2[4])
-  fn = r2[5]
-  
-  # Parse out the footnote
-  if fn != 'N/A':
-    fn_sp = fn.split()
-    fn_co = int(len(fn_sp)) - 1
-    fn = fn_sp[fn_co]
-  
-  # Finally, pass all the data to a dictionary then dump into the file
-  d = {
-        'naics': int(nai),
-        'exception': exc,
-        'subsector': int(ssec),
-        'subsector_name': ssec_n,
-        'description': desc,
-        'ss_millions': float(ss_m),
-        'ss_employees': int(ss_e),
-        'footnotes': fn
-      }
-  json.dump(d, json_file, indent = 2)
-
-# Add closing bracket to signify the end
-json_file.write(']')
-json_file.close()
+  # Add closing bracket to signify the end
+  jf.write(']')
 
 # Add commas inbetween each object
-json_file = open(fname, 'r')
-contents = json_file.read()
-contents = contents.replace('}{', '},{')
-json_file.close()
+with open(jname, 'r') as jf:
+  contents = jf.read()
+  contents = contents.replace('}{', '},{')
 
 # Overwrite old file with new changes
-json_file = open(fname, 'w')
-json_file.write(contents)
+with open(jname, 'w') as jf:
+  jf.write(contents)
 
-print('Finished pushing data')
+print('Finished pushing data to ' + jname)
 
 
 

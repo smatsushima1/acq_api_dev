@@ -1,6 +1,7 @@
 # Parse-out FAR part and its name
 
 import os
+from os import path
 import json
 
 far = [
@@ -59,39 +60,48 @@ far = [
        'Part 53-Forms'
       ]
 
-jname = 'json/' + os.path.basename(__file__).split('.')[0] + '.json'
-# open(jname, 'w').close()
-jfile = open(jname, 'a', encoding = 'utf8')
-jfile.write('[')
+# Load file
+# Remove all its contents before writing anything, but only if it exists
+jname = os.path.basename(__file__).split('.')[0]
+jname = 'json/' + jname + '.json'
 
-# Perform multiple splits to separate the '-' and the spaces
-for i in far:
-  spl1 = i.split('-')
-  fpart = spl1[0]
-  spl1 = fpart.split(' ')
-  fpart2 = spl1[1]
-  fpart3 = fpart + '-'
-  fname = i.replace(fpart3, '')
-  
-  d = {
-       'part': int(fpart2),
-       'name': str(fname)
-      }
-  json.dump(d, jfile, indent = 2)
-  
-# Add closing bracket to signify the end
-jfile.write(']')
-jfile.close()
+if path.exists(jname):
+  open(jname, 'w').close()
 
-# Add commas inbetween each object
-jfile = open(jname, 'r')
-contents = jfile.read()
-contents = contents.replace('}{', '},{')
-jfile.close()
+with open(jname, 'w', encoding = 'utf8') as jf:
+  jf.write('[')
 
-# Overwrite old file with new changes
-jfile = open(jname, 'w')
-jfile.write(contents)
+  # Perform multiple splits to separate the '-' and the spaces
+  for i in far:
+    spl1 = i.split('-')
+    fpart = spl1[0]
+    spl1 = fpart.split(' ')
+    fpart2 = spl1[1]
+    fpart3 = fpart + '-'
+    fname = i.replace(fpart3, '')
+    
+    d = {
+         'part': int(fpart2),
+         'name': str(fname)
+        }
+    json.dump(d, jf, indent = 2)
+    
+  # Add closing bracket to signify the end
+  jf.write(']')
 
-print('Finished pushing data')
+# Convert all dictionaries to strings, then add commas inbetween each object
+# Then, overwrite old file with new changes as a list of strings
+with open(jname, 'r') as jf:
+  contents = jf.read()
+  contents = contents.replace('}{', '},{')
+with open(jname, 'w', encoding = 'utf8') as jf:
+  jf.write(contents)
+
+# Finally, reconvert the file back to a json file
+with open(jname, 'r') as jf:
+  contents = json.load(jf)
+with open(jname, 'w', encoding = 'utf8') as jf:
+  json.dump(contents, jf, indent = 2)
+
+print('Finished pushing data to ' + jname)
 

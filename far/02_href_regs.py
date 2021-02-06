@@ -1,6 +1,7 @@
 # Finds href of supplements
 
 import os
+from os import path
 from bs4 import BeautifulSoup as bsp
 import urllib as ul
 import json
@@ -18,39 +19,47 @@ rt = soup.find('div', class_ = 'reg-container clearfix')
 rt = rt.find_all('a')
 
 # Load file
-jname = 'json/' + os.path.basename(__file__).split('.')[0] + '.json'
-# open(jname, 'w').close()
-jfile = open(jname, 'a', encoding = 'utf8')
-jfile.write('[')
+# Remove all its contents before writing anything, but only if it exists
+jname = os.path.basename(__file__).split('.')[0]
+jname = 'json/' + jname + '.json'
 
-# Take-out the attributes
-for i in rt:
-  reg_abb = i.get_text()
-  reg_abb = reg_abb.strip()
-  reg_name = i.attrs['href']
-  reg_name = reg_name.strip()
-  
-  d = {
-       'reg': reg_abb,
-       'href': reg_name
-      }
-  json.dump(d, jfile, indent = 2)
-  
-# Add closing bracket to signify the end
-jfile.write(']')
-jfile.close()
+if path.exists(jname):
+  open(jname, 'w').close()
 
-# Add commas inbetween each object
-jfile = open(jname, 'r')
-contents = jfile.read()
-contents = contents.replace('}{', '},{')
-jfile.close()
+with open(jname, 'w', encoding = 'utf8') as jf:
+  jf.write('[')
 
-# Overwrite old file with new changes
-jfile = open(jname, 'w')
-jfile.write(contents)
+  # Take-out the attributes
+  for i in rt:
+    reg_abb = i.get_text()
+    reg_abb = reg_abb.strip()
+    reg_name = i.attrs['href']
+    reg_name = reg_name.strip()
+    
+    d = {
+         'reg': reg_abb,
+         'href': reg_name
+        }
+    json.dump(d, jf, indent = 2)
+    
+  # Add closing bracket to signify the end
+  jf.write(']')
 
-print('Finished pushing data')
+# Convert all dictionaries to strings, then add commas inbetween each object
+# Then, overwrite old file with new changes as a list of strings
+with open(jname, 'r') as jf:
+  contents = jf.read()
+  contents = contents.replace('}{', '},{')
+with open(jname, 'w', encoding = 'utf8') as jf:
+  jf.write(contents)
+
+# Finally, reconvert the file back to a json file
+with open(jname, 'r') as jf:
+  contents = json.load(jf)
+with open(jname, 'w', encoding = 'utf8') as jf:
+  json.dump(contents, jf, indent = 2)
+
+print('Finished pushing data to ' + jname)
 
 
 
